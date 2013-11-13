@@ -1,4 +1,4 @@
-# Realm
+# Realm (WORK IN PROGRESS)
 
 Realm is a simple database-independent model layer in Elixir with validation functions and attribute tracking.
 
@@ -7,7 +7,7 @@ It does not provide any saving mechanism. It is left to the user to implement wh
 
 ## Usage
 
-* Define your record with a field called "errors" with a default value as an empty list
+* Define your record with a field called `__errors__` with a default value as an empty list
 * In your record, to add validations, define a `validate` function which takes a record as the first argument and also returns the record.
 
 
@@ -19,7 +19,7 @@ Once you have done those, you can use the `valid?` function on the record. It re
 All validation functions return the record. The record is modified, with the errors added whenever necessary, so you will have to keep the modified record. To make things easier, use Elixir's pipes. Look at the example below:
 
 ```elixir
-defrecord User, errors: [], first_name: nil, last_name: nil, age: 0, role: "member" do
+defrecord User, __errors__: [], first_name: nil, last_name: nil, age: 0, role: "member" do
   use Realm
 
   def validate(record) do
