@@ -33,6 +33,13 @@ end
 
 Note that the `validate` MUST return a record.
 
+## record.attributes()
+
+When you have a record of the type `User`, to get attributes do `record.attributes`.
+
+It will return all fields and their values, except the field names that start and end with `__`. Like the `__errors__` field, which isn't returned.
+
+
 ## Validation helpers
 
 In your `validate` function, you can use the following helpers.
@@ -134,7 +141,7 @@ validates_format(record, :serial_number, [format: %r/[a-z][0-9]{3}/]], fn(record
 end)
 ```
 
-## Adding custom validation
+#### Adding custom validation
 
 Easy peasy... add your custom validations to the `validate` function. Make sure you return the record at the end.
 
