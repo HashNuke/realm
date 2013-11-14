@@ -141,9 +141,29 @@ validates_format(record, :serial_number, [format: %r/[a-z][0-9]{3}/]], fn(record
 end)
 ```
 
-#### Adding custom validation
+### Adding custom validation
 
 Easy peasy... add your custom validations to the `validate` function. Make sure you return the record at the end.
+
+When writing your own validation, to add your own errors for fields, use the following helpers
+
+#### add_error(record, field_name, error_message)
+
+Add error to a record, for a field, after validation
+
+example:
+
+```elixir
+add_error(record, :username, "already been taken")
+```
+
+#### clear_errors(record)
+
+Clear errors in a validated record
+
+```elixir
+clear_errors(record)
+```
 
 ## Credits
 
