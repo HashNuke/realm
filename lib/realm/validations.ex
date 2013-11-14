@@ -116,7 +116,8 @@ defmodule Realm.Validations do
 
   def validates_format(record, field, options) do
     error_message = options[:message] || "does not match format"
-    if Regex.match?(options[:format], apply(record, :"#{field}", [])) do
+    field_value = apply(record, :"#{field}", [])
+    unless Regex.match?(options[:format], "#{field_value}") do
       record = add_error(record, field, error_message)
     end
     record
