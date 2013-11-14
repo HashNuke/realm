@@ -19,16 +19,24 @@ Once you have done those, you can use the `valid?` function on the record. It re
 All validation functions return the record. The record is modified, with the errors added whenever necessary, so you will have to keep the modified record. To make things easier, use Elixir's pipes. Look at the example below:
 
 ```elixir
-defrecord User, __errors__: [], first_name: nil, last_name: nil, age: 0, role: "member" do
+defrecord Student, name: nil, phone: nil, country: nil, __errors__: [] do
   use Realm
-
   def validate(record) do
     record
-      |> validates_length(:first_name, [min: 1])
-      |> validates_inclusion(:role, [in: ["admin", "member"], message: "must have a valid role"])
-      |> validates_format(:age, )
+    |> validates_length(:name, [min: 1])
+    |> validates_length(:country, [max: 2, message: "use a valid 2-letter country code"])
+    |> validates_format(:phone, [format: %r/[0-9]+/], fn(record)-> record.country == "US" end)
   end
 end
+
+john = Student[name: "John Doe"]
+john.valid?           #=> false
+john.attributes       #=> [name: "John Doe", phone: nil, country: nil]
+john.validate.errors  #=> [country: "use a valid 2-letter country code"]
+
+## We have a condition for the validating phone number
+## So let us update the country to US and validate again
+john.country("US").validate.errors  #=> [phone: "does not match format"]
 ```
 
 Note that the `validate` MUST return a record.

@@ -17,6 +17,10 @@ defmodule Realm.Validations do
         record
       end
 
+      def errors(record) do
+        record.__errors__
+      end
+
       defoverridable [validate: 1]
     end
   end
@@ -154,8 +158,4 @@ defmodule Realm.Validations do
     record.__errors__([])
   end
 
-
-  def errors(record) do
-    record.__errors__
-  end
 end
