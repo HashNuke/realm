@@ -1,8 +1,8 @@
-# Realm (WORK IN PROGRESS)
+# Realm
 
-Realm is a simple database-independent model layer in Elixir with validation functions and attribute tracking.
+Realm is a simple model layer in Elixir with validation functions and attribute tracking.
 
-It does not provide any saving mechanism. It is left to the user to implement whatever is convinient.
+It is database-independent. Any interaction with databases are left to be implemented by the user (if required).
 
 
 ## Usage
@@ -25,7 +25,8 @@ defrecord User, __errors__: [], first_name: nil, last_name: nil, age: 0, role: "
   def validate(record) do
     record
       |> validates_length(:first_name, [min: 1])
-      |> validates_inclusion(:role, [in: ["admin", "member"]])
+      |> validates_inclusion(:role, [in: ["admin", "member"], message: "must have a valid role"])
+      |> validates_format(:age, )
   end
 end
 ```
@@ -41,6 +42,9 @@ In all the helper functions, the first two arguments are
 * `record` - record to be validated
 * `field_name` - the field name in the record to validate
 
+Each validation helper can also be passed a function, that accepts a record, as a 4th argument. If such a function is passed, then the validation is performed only if the function returns true.
+
+
 #### validates_length(record, field_name, options)
 
 Validates length of Elixir strings (binaries) or lists (including single quoted strings).
@@ -54,11 +58,28 @@ Accepts the following options:
 Either `min` or `max` should be passed. Passing both is also fine.
 If you do not pass a `message`, a standard error message will be used.
 
+```elixir
+validates_length(record, :name, [min: 3, max: 30])
+
+validates_length(record, :name, [min: 3, message: "Name is not long enough"])
+
+validates_length(record, :phone, [min: 10], fn(record)-> record.country == "US" end)
+```
+
 #### validates_presence(record, field_name, options)
 
 Validates the value of the field is non-nil.
 
 The only option is `message`, which is the custom error message.
+
+```elixir
+validates_presence(record, :age)
+
+validates_presence(record, :age, [message: "Age must be entered"])
+
+# In this case you can skip the options arg
+validates_presence(record, :age, fn(record)-> record.country == "US" end)
+```
 
 #### validates_inclusion(record, field_name, options)
 
@@ -66,8 +87,16 @@ Validates if the field contains only any of values from a specified list.
 
 Valid options:
 
-* `in` - list of valid values
+* `in` - list of valid values. This is a __required__ option
 * `message` - custom error message
+
+```elixir
+validates_inclusion(record, :role, [in: ["admin", "member"]])
+
+validates_inclusion(record, :role, [in: ["admin", "member"], message: "must have a valid role"])
+
+validates_inclusion(record, :costume, fn(record)-> record.role == "superhero" end)
+```
 
 #### validates_exclusion(record, field_name, options)
 
@@ -75,8 +104,16 @@ Validates if the field doesn't contain any of values from a specified list.
 
 Valid options:
 
-* `from` - list of invalid values
+* `from` - list of invalid values. this is a __required__ option.
 * `message` - custom error message
+
+```elixir
+validates_exclusion(record, :role, [from: ["superman", "batman"]])
+
+validates_exclusion(record, :role, [from: ["superman", "batman"], message: "You cannot be a superhero."])
+
+validates_exclusion(record, :role, [from: ["ironman", "batman"]], fn(record)-> record.status != "billionaire" end)
+```
 
 #### validates_format(record, field_name, options)
 
@@ -84,11 +121,25 @@ Validates if the format of the field's value matches the specified format.
 
 Valid options:
 
-* `format` - regexp that specifies the format
+* `format` - regexp that specifies the format. This is a required option.
 * `message` - custom error message
 
+```elixir
+validates_format(record, :serial_number, [format: %r/[a-z][0-9]{3}/])
+
+validates_format(record, :serial_number, [format: %r/[a-z][0-9]{3}/], message: "Invalid serial number"])
+
+validates_format(record, :serial_number, [format: %r/[a-z][0-9]{3}/]], fn(record)->
+  record.expiry_year < 2011
+end)
+```
 
 ## Adding custom validation
 
 Easy peasy... add your custom validations to the `validate` function. Make sure you return the record at the end.
 
+## Credits
+
+Author: [Akash Manohar](http://twitter.com/HashNuke)
+
+Copyright &copy; 2013 under the MIT License

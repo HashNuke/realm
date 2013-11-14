@@ -123,6 +123,27 @@ defmodule Realm.Validations do
   end
 
 
+  def validates_presence(record, field, options, condition) do
+    if apply(condition, [record]) do
+      record = validates_presence(record, field, options)
+    end
+    record
+  end
+
+
+  def validates_presence(record, field, condition) when is_function(condition) do
+    validates_presence(record, field, [], condition)
+  end
+
+  def validates_presence(record, field, options) do
+    error_message = options[:message] || "is not present"
+    unless apply(record, :"#{field}", []) do
+      record = add_error(record, field, error_message)
+    end
+    record
+  end
+
+
   def add_error(record, field, error) do
     record.__errors__( [{field, error} | record.__errors__] )
   end
