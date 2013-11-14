@@ -1,6 +1,6 @@
 # Realm
 
-Realm is a simple model layer in Elixir with validation functions and attribute tracking.
+Realm is a simple model layer in Elixir with validation functions.
 
 It is database-independent. Any interaction with databases are left to be implemented by the user (if required).
 
