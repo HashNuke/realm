@@ -24,16 +24,32 @@ defmodule Realm.Validations do
 
   def validates_inclusion(record, field, options, condition) do
     if apply(condition, [record]) do
-      validates_inclusion(record, field, options)
-    else
-      record
+      record = validates_inclusion(record, field, options)
     end
+    record
   end
 
 
   def validates_inclusion(record, field, options) do
-    error_message = "does not contain #{Enum.join options[:in], ", "}"
+    error_message = options[:message] || "does not contain valid value}"
     unless :lists.member(apply(record, :"#{field}", []), options[:in]) do
+      record = add_error(record, field, error_message)
+    end
+    record
+  end
+
+
+  def validates_exclusion(record, field, options, condition) do
+    if apply(condition, [record]) do
+      record = validates_exclusion(record, field, options)
+    end
+    record
+  end
+
+
+  def validates_exclusion(record, field, options) do
+    error_message = options[:message] || "contains an invalid value"
+    if :lists.member(apply(record, :"#{field}", []), options[:from]) do
       record = add_error(record, field, error_message)
     end
     record
@@ -42,10 +58,9 @@ defmodule Realm.Validations do
 
   def validates_length(record, field, options, condition) do
     if apply(condition, [record]) do
-      validates_length(record, field, options)
-    else
-      record
+      record = validates_length(record, field, options)
     end
+    record
   end
 
 
@@ -88,6 +103,23 @@ defmodule Realm.Validations do
       true ->
         add_error(record, field, "unsupported data")
     end
+  end
+
+
+  def validates_format(record, field, options, condition) do
+    if apply(condition, [record]) do
+      record = validates_format(record, field, options)
+    end
+    record
+  end
+
+
+  def validates_format(record, field, options) do
+    error_message = options[:message] || "does not match format"
+    if Regex.match?(options[:format], apply(record, :"#{field}", [])) do
+      record = add_error(record, field, error_message)
+    end
+    record
   end
 
 
