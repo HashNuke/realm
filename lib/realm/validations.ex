@@ -150,7 +150,7 @@ defmodule Realm.Validations do
   end
 
 
-  def validate_uniqueness(record, field, options) do
+  def validates_uniqueness(record, field, options) do
     if apply(options[:condition], [record]) do
       add_error(record, field, options[:message] || "is not unique")
     else
