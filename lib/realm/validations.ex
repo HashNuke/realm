@@ -140,12 +140,22 @@ defmodule Realm.Validations do
     validates_presence(record, field, [], condition)
   end
 
+
   def validates_presence(record, field, options) do
     error_message = options[:message] || "is not present"
     unless apply(record, :"#{field}", []) do
       record = add_error(record, field, error_message)
     end
     record
+  end
+
+
+  def validate_uniqueness(record, field, options) do
+    if apply(options[:condition], [record]) do
+      add_error(record, field, options[:message] || "is not unique")
+    else
+      record
+    end
   end
 
 

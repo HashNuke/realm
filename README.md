@@ -149,6 +149,17 @@ validates_format(record, :serial_number, [format: %r/[a-z][0-9]{3}/]], fn(record
 end)
 ```
 
+#### validates_uniqueness(record, field_name, options)
+
+Validates if the uniqueness of the record, by using the condition passed. Ideally you'll be using checking the database or some source to validate if this record is unique in some way.
+
+Valid options:
+
+* `condition` - function to check the uniqueness. It should accept a record and should return `true` if the record's field's value is unique.
+* `message` - custom error message
+
+This is the only function without a variant, which accepts a fourth argument (like other validation helpers). If you want any other condition, just specify it in the condition option itself.
+
 ### Adding custom validation
 
 Easy peasy... add your custom validations to the `validate` function. Make sure you return the record at the end.
